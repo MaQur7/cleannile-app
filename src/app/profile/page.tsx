@@ -37,18 +37,18 @@ export default function ProfilePage() {
     }
 
     const q = query(
-  collection(db, "reports"),
-  where("userId", "==", user.uid)
-);
+      collection(db, "reports"),
+      where("userId", "==", user.uid)
+    );
 
-const unsubscribe = onSnapshot(q, (snapshot) => {
-  const data = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
+    unsubscribeReports = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-  setReports(data);
-});
+      setReports(data);
+    });
 
     setLoading(false);
   };
