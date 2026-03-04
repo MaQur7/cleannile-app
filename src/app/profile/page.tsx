@@ -9,7 +9,7 @@ import {
   collection,
   query,
   where,
-  getDocs,
+  getDoc,
 } from "firebase/firestore";
 
 export default function ProfilePage() {
