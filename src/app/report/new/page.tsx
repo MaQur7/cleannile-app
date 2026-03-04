@@ -47,50 +47,40 @@ export default function NewReportPage() {
       const photoURL = await getDownloadURL(photoRef);
 
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
+  async (position) => {
+    const { latitude, longitude } = position.coords;
 
-          try {
-            await fetch("/api/reports", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                category,
-                description,
-                photoURL,
-                latitude,
-                longitude,
-                userId: auth.currentUser?.uid,
-              }),
-            });
-
-            alert("Report submitted successfully!");
-
-            setDescription("");
-            setCategory("pollution");
-            setPhoto(null);
-
-            if (fileInputRef.current) {
-              fileInputRef.current.value = "";
-            }
-
-            setLoading(false);
-          } catch (error: any) {
-            console.error("Firestore error full:", error);
-            alert("Firestore error: " + error.message);
-            setLoading(false);
-          }
+    try {
+      await fetch("/api/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          category,
+          description,
+          photoURL,
+          latitude,
+          longitude,
+          userId: auth.currentUser?.uid,
+        }),
+      });
 
-        // FIXED ERROR CALLBACK
-        (error: GeolocationPositionError) => {
-          console.error("Location error:", error);
-          alert("Location permission denied.");
-          setLoading(false);
-        }
-      );
+      alert("Report submitted successfully!");
+      setLoading(false);
+    } catch (error: any) {
+      console.error("Firestore error:", error);
+      setLoading(false);
+    }
+  },
+
+  // IMPORTANT FIX
+  (error: GeolocationPositionError) => {
+    console.error("Location error:", error);
+    alert("Location permission denied.");
+    setLoading(false);
+  }
+);
     } catch (error: any) {
       console.error("Upload error:", error.message);
       setLoading(false);
