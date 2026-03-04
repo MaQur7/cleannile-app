@@ -1,0 +1,13 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/page": "/admin",
+  "/api/reports/route": "/api/reports",
+  "/dashboard/page": "/dashboard",
+  "/favicon.ico/route": "/favicon.ico",
+  "/login/page": "/login",
+  "/map/page": "/map",
+  "/page": "/",
+  "/profile/page": "/profile",
+  "/report/new/page": "/report/new"
+}

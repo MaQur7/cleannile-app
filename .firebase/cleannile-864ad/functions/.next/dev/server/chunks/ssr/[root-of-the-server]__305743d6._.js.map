@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///D:/cleannile-app/src/app/page.tsx"],"sourcesContent":["export default function Home() {\r\n  return (\r\n    <main style={{ padding: \"20px\" }}>\r\n      <h1>CleanNile App</h1>\r\n\r\n      <a href=\"/login\">\r\n        <button>Go to Login</button>\r\n      </a>\r\n    </main>\r\n  );\r\n}"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBACE,8OAAC;QAAK,OAAO;YAAE,SAAS;QAAO;;0BAC7B,8OAAC;0BAAG;;;;;;0BAEJ,8OAAC;gBAAE,MAAK;0BACN,cAAA,8OAAC;8BAAO;;;;;;;;;;;;;;;;;AAIhB"}}]
+}

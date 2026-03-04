@@ -1,0 +1,152 @@
+[00:00:01.150] Server  LOG     ✓ Ready in 818ms
+[00:00:05.102] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:08.172] Browser ERROR   unhandledRejection: FirebaseError: Missing or insufficient permissions.
+[00:00:08.173] Browser ERROR   unhandledRejection: FirebaseError: Missing or insufficient permissions.
+[00:00:53.321] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.321] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.321] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.321] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.322] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.322] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:53.322] Browser ERROR   ./src/app/map/page.tsx:6:9
+Module not found: Can't resolve '../../components/MapView'
+  4 |
+  5 | const MapView = dynamic(
+> 6 |   () => import("../../components/MapView"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |   { ssr: false }
+  8 | );
+  9 |
+
+Import traces:
+  Client Component Browser:
+    ./src/app/map/page.tsx [Client Component Browser]
+    ./src/app/map/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/map/page.tsx [Client Component SSR]
+    ./src/app/map/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:00:54.323] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:59.164] Browser LOG     User logged in: {"apiKey":"AIzaSyAuTF4vIw6ZleU65WGdcIhaMqTFc0uoNI0","appName":"[DEFAULT]","createdAt":"1772566385699","email":"makurmajengm@gmail.com","emailVerified":false,"isAnonymous":false,"lastLoginAt":"1772642693463","providerData":[{"displayName":null,"email":"makurmajengm@gmail.com","phoneNumber":null,"photoURL":null,"providerId":"password","uid":"makurmajengm@gmail.com"}],"stsTokenManager":{"accessToken":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjJhYWM0MWY3NTA4OGZlOGUwOWEwN2Q0NDRjZmQ2YjhjZTQ4MTJhMzEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2xlYW5uaWxlLTg2NGFkIiwiYXVkIjoiY2xlYW5uaWxlLTg2NGFkIiwiYXV0aF90aW1lIjoxNzcyNjQyNjkzLCJ1c2VyX2lkIjoiU1pneGxEaU8yOGRkU3FQaHJ0Rm50azJOYm1KMyIsInN1YiI6IlNaZ3hsRGlPMjhkZFNxUGhydEZudGsyTmJtSjMiLCJpYXQiOjE3NzI2NDI2OTMsImV4cCI6MTc3MjY0NjI5MywiZW1haWwiOiJtYWt1cm1hamVuZ21AZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIm1ha3VybWFqZW5nbUBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.1XRaJtBAg49QuRaP5b7JULpqcL5So2IbOAhSPOuIHIc7syC8Z84vmd-h-D7DhjiwBCH9-shH65byOWBDUgkUJ10Ik0BFRGmBKQlGG5nohd_Jl1bdmVbLswsusayOH2pvwDeN5XpeeteJJ3cPCJhA-rxWVACDL4AgjSCs7YWRbcOJrqsXYRsGKnmuJ1DjP7FZ17Wqs7DynWFcQiW4SXbkkHO7Mix9IcYO-hGKLu7_bv-a1j867siO01JHNb9HIG38vpM1HaTCgfHp4XDrdTw94JnxlXyz_k0J3_NwKTefaKpssw3wfgj6eRhfdGaBKcn-uEwJZcRRRLawjz0I-dLAGA","expirationTime":1772646292996,"refreshToken":"AMf-vBz1ZOPVwWqidSy0Cu085GbvlbdPUQmIMeK2EIJka-eTl6RcQt4TYFABOarEBGPcYOJqL2xR_bq6wX8kMIPfieyMBCoRNm1cSje332FGHCxjr3DUNM8TF2KFchm3IGy9HTSCwXFfrdS8t5uJO35TZhN0xQYrtfPF3go6iwfOTmOKdgikWPa7HGHGWavkfHV7WU64IFbwBPgNXHi-rHGgB23u_3rynQ"},"uid":"SZgxlDiO28ddSqPhrtFntk2NbmJ3"}
+[00:01:03.577] Browser LOG     Reports from Firestore: [{"category":"pollution","createdAt":{"nanoseconds":480000000,"seconds":1772559186,"type":"firestore/timestamp/1.0"},"description":"waste","id":"2kmA5ZRy5TlLDETyit2I","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772559177486-WIN_20250716_13_51_18_Pro.jpg?alt=media&token=fa4b1279-e58e-4ff1-9da4-2760b5724076","status":"approved","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"},{"category":"pollution","createdAt":{"nanoseconds":404000000,"seconds":1772558983,"type":"firestore/timestamp/1.0"},"description":"plastic","id":"XBMz2xtm5POr300w6u2F","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772558971760-IMG_2652(1).heic?alt=media&token=de24570d-c4bc-45c0-acfb-12ec3686691e","status":"rejected","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"}]
+[00:01:03.578] Browser LOG     Reports from Firestore: [{"category":"pollution","createdAt":{"nanoseconds":480000000,"seconds":1772559186,"type":"firestore/timestamp/1.0"},"description":"waste","id":"2kmA5ZRy5TlLDETyit2I","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772559177486-WIN_20250716_13_51_18_Pro.jpg?alt=media&token=fa4b1279-e58e-4ff1-9da4-2760b5724076","status":"approved","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"},{"category":"pollution","createdAt":{"nanoseconds":404000000,"seconds":1772558983,"type":"firestore/timestamp/1.0"},"description":"plastic","id":"XBMz2xtm5POr300w6u2F","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772558971760-IMG_2652(1).heic?alt=media&token=de24570d-c4bc-45c0-acfb-12ec3686691e","status":"rejected","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"}]
+[00:02:17.990] Server  LOG     ✓ Compiled in 593ms
+[00:34:05.702] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:34:08.957] Browser LOG     Reports from Firestore: [{"category":"pollution","createdAt":{"nanoseconds":480000000,"seconds":1772559186,"type":"firestore/timestamp/1.0"},"description":"waste","id":"2kmA5ZRy5TlLDETyit2I","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772559177486-WIN_20250716_13_51_18_Pro.jpg?alt=media&token=fa4b1279-e58e-4ff1-9da4-2760b5724076","status":"approved","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"},{"category":"pollution","createdAt":{"nanoseconds":404000000,"seconds":1772558983,"type":"firestore/timestamp/1.0"},"description":"plastic","id":"XBMz2xtm5POr300w6u2F","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772558971760-IMG_2652(1).heic?alt=media&token=de24570d-c4bc-45c0-acfb-12ec3686691e","status":"rejected","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"}]
+[00:34:08.957] Browser LOG     Reports from Firestore: [{"category":"pollution","createdAt":{"nanoseconds":480000000,"seconds":1772559186,"type":"firestore/timestamp/1.0"},"description":"waste","id":"2kmA5ZRy5TlLDETyit2I","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772559177486-WIN_20250716_13_51_18_Pro.jpg?alt=media&token=fa4b1279-e58e-4ff1-9da4-2760b5724076","status":"approved","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"},{"category":"pollution","createdAt":{"nanoseconds":404000000,"seconds":1772558983,"type":"firestore/timestamp/1.0"},"description":"plastic","id":"XBMz2xtm5POr300w6u2F","location":{"latitude":4.894965488201917,"longitude":31.589420511363585},"photoURL":"https://firebasestorage.googleapis.com/v0/b/cleannile-864ad.firebasestorage.app/o/reports%2F1772558971760-IMG_2652(1).heic?alt=media&token=de24570d-c4bc-45c0-acfb-12ec3686691e","status":"rejected","userId":"FWDMME5VBzRE6m6sT85QxbIjwgk2"}]
