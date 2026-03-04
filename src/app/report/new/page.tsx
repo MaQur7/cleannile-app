@@ -17,83 +17,85 @@ export default function NewReportPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    if (!user) {
-      router.push("/login");
-    }
-  });
-
-  return () => unsubscribe();
-}, [router]);
-
-  const handleSubmit = async () => {
-  if (!auth.currentUser) {
-    alert("You must be logged in.");
-    return;
-  }
-
-  if (!photo) {
-    alert("Please upload a photo.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const photoRef = ref(storage, `reports/${Date.now()}-${photo.name}`);
-    await uploadBytes(photoRef, photo);
-
-    const photoURL = await getDownloadURL(photoRef);
-
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const { latitude, longitude } = position.coords;
-
-      try {
-        await fetch("/api/reports", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    category,
-    description,
-    photoURL,
-    latitude,
-    longitude,
-    userId: auth.currentUser?.uid,
-  }),
-});
-
-        alert("Report submitted successfully!");
-
-        setDescription("");
-        setCategory("pollution");
-        setPhoto(null);
-
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-
-        setLoading(false);
-
-      } catch (error: any) {
-        console.error("Firestore error full:", error);
-alert("Firestore error: " + error.message);
-        setLoading(false);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        router.push("/login");
       }
     });
 
-    (error) => {
-    console.error("Location error:", error);
-    alert("Location permission denied.");
-    setLoading(false);
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleSubmit = async () => {
+    if (!auth.currentUser) {
+      alert("You must be logged in.");
+      return;
     }
-  } catch (error: any) {
-    console.error("Upload error:", error.message);
-    setLoading(false);
-  }
-};
+
+    if (!photo) {
+      alert("Please upload a photo.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const photoRef = ref(storage, `reports/${Date.now()}-${photo.name}`);
+      await uploadBytes(photoRef, photo);
+
+      const photoURL = await getDownloadURL(photoRef);
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          try {
+            await fetch("/api/reports", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                category,
+                description,
+                photoURL,
+                latitude,
+                longitude,
+                userId: auth.currentUser?.uid,
+              }),
+            });
+
+            alert("Report submitted successfully!");
+
+            setDescription("");
+            setCategory("pollution");
+            setPhoto(null);
+
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+
+            setLoading(false);
+          } catch (error: any) {
+            console.error("Firestore error full:", error);
+            alert("Firestore error: " + error.message);
+            setLoading(false);
+          }
+        },
+
+        // FIXED ERROR CALLBACK
+        (error: GeolocationPositionError) => {
+          console.error("Location error:", error);
+          alert("Location permission denied.");
+          setLoading(false);
+        }
+      );
+    } catch (error: any) {
+      console.error("Upload error:", error.message);
+      setLoading(false);
+    }
+  };
 
   return (
     <main style={{ padding: "20px" }}>
@@ -119,16 +121,16 @@ alert("Firestore error: " + error.message);
       <br /><br />
 
       <input
-  ref={fileInputRef}
-  type="file"
-  accept="image/*"
-  capture="environment"
-  onChange={(e) => {
-    if (e.target.files) {
-      setPhoto(e.target.files[0]);
-    }
-  }}
-/>
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={(e) => {
+          if (e.target.files) {
+            setPhoto(e.target.files[0]);
+          }
+        }}
+      />
 
       <br /><br />
 
