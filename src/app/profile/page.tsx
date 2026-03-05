@@ -4,32 +4,33 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "../../lib/firebase";
 import {
-  doc,
-  onSnapshot,
-  collection,
-  query,
-  where,
-  getDoc,
+doc,
+onSnapshot,
+collection,
+query,
+where,
+getDoc,
 } from "firebase/firestore";
 
+import AuthGuard from "../../components/AuthGuard";
+
 export default function ProfilePage() {
-  const router = useRouter();
+const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
-  const [reports, setReports] = useState<any[]>([]);
+const [loading, setLoading] = useState(true);
+const [userData, setUserData] = useState<any>(null);
+const [reports, setReports] = useState<any[]>([]);
 
-  useEffect(() => {
-  let unsubscribeReports: any;
+useEffect(() => {
+let unsubscribeReports: any;
 
-  const loadProfile = async () => {
-    const user = auth.currentUser;
+const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
+  if (!user) {
+    router.push("/login");
+    return;
+  }
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
-
+  try {
     const userDoc = await getDoc(doc(db, "users", user.uid));
 
     if (userDoc.exists()) {
@@ -51,80 +52,88 @@ export default function ProfilePage() {
     });
 
     setLoading(false);
-  };
+  } catch (error) {
+    console.error("Error loading profile:", error);
+  }
+});
 
-  loadProfile();
+return () => {
+  if (unsubscribeReports) unsubscribeReports();
+  unsubscribeAuth();
+};
 
-  return () => {
-    if (unsubscribeReports) unsubscribeReports();
-  };
 }, [router]);
 
-  if (loading) return <div>Loading profile...</div>;
+if (loading) return <div>Loading profile...</div>;
 
-  return (
+return ( <AuthGuard>
+<div
+style={{
+padding: "40px",
+maxWidth: "900px",
+margin: "0 auto",
+fontFamily: "system-ui, sans-serif",
+}}
+> <h1>My Profile</h1>
+
     <div
       style={{
-        padding: "40px",
-        maxWidth: "900px",
-        margin: "0 auto",
-        fontFamily: "system-ui, sans-serif",
+        background: "#f8f9fa",
+        padding: "20px",
+        borderRadius: "10px",
+        marginBottom: "30px",
       }}
     >
-      <h1>My Profile</h1>
+      <p><strong>Email:</strong> {auth.currentUser?.email}</p>
+      <p><strong>Role:</strong> {userData?.role}</p>
+    </div>
 
+    <h2>My Reports</h2>
+
+    {reports.length === 0 && (
+      <p>You have not submitted any reports.</p>
+    )}
+
+    {reports.map((report) => (
       <div
+        key={report.id}
         style={{
-          background: "#f8f9fa",
-          padding: "20px",
-          borderRadius: "10px",
-          marginBottom: "30px",
+          border: "1px solid #ddd",
+          padding: "15px",
+          borderRadius: "8px",
+          marginBottom: "15px",
         }}
       >
-        <p><strong>Email:</strong> {auth.currentUser?.email}</p>
-        <p><strong>Role:</strong> {userData?.role}</p>
-      </div>
+        <p><strong>{report.category}</strong></p>
+        <p>{report.description}</p>
 
-      <h2>My Reports</h2>
+        <p>
+          <strong>Status:</strong>{" "}
+          <span
+            style={{
+              color:
+                report.status === "approved"
+                  ? "green"
+                  : report.status === "rejected"
+                  ? "red"
+                  : "orange",
+            }}
+          >
+            {report.status}
+          </span>
+        </p>
 
-      {reports.length === 0 && <p>You have not submitted any reports.</p>}
-
-      {reports.map((report) => (
-        <div
-          key={report.id}
+        <img
+          src={report.photoURL}
+          alt="Report"
           style={{
-            border: "1px solid #ddd",
-            padding: "15px",
-            borderRadius: "8px",
-            marginBottom: "15px",
+            width: "200px",
+            borderRadius: "6px",
           }}
-        >
-          <p><strong>{report.category}</strong></p>
-          <p>{report.description}</p>
-
-          <p>
-            <strong>Status:</strong>{" "}
-            <span
-              style={{
-                color:
-                  report.status === "approved"
-                    ? "green"
-                    : report.status === "rejected"
-                    ? "red"
-                    : "orange",
-              }}
-            >
-              {report.status}
-            </span>
-          </p>
-
-          <img
-            src={report.photoURL}
-            alt="Report"
-            style={{ width: "200px", borderRadius: "6px" }}
-          />
-        </div>
-      ))}
-    </div>
-  );
+        />
+      </div>
+    ))}
+  </div>
+</AuthGuard>
+);
 }

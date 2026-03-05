@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { auth } from "../../../lib/firebase";
-import { db, storage } from "../../../lib/firebase";
+import { auth } from "../../lib/firebase";
+import { db, storage } from "../../lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
-import AuthGuard from "../../../components/AuthGuard";
+import AuthGuard from "../../components/AuthGuard";
 
 export default function NewReportPage() {
 const [description, setDescription] = useState("");
