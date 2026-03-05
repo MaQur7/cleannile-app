@@ -12,6 +12,7 @@ updateDoc,
 import { onSnapshot } from "firebase/firestore";
 
 import AdminGuard from "../../components/AdminGuard";
+import AdminStats from "../../components/AdminStats";
 
 export default function AdminPage() {
 
@@ -211,7 +212,6 @@ cursor: "pointer",
 }}
 
 >
-
 Approve </button>
 
 <button
@@ -248,6 +248,8 @@ Reject </button>
 
 <p key={report.id}>{report.category} - rejected</p>
 ))}
+
+{/* Statistics Dashboard */} <AdminStats />
 
 </div>
 
