@@ -1,78 +1,99 @@
 "use client";
 
-import { useEffect,useState } from "react";
-import { db,auth } from "../../../lib/firebase";
-import { doc,getDoc,updateDoc,arrayUnion } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../../lib/firebase";
+import { normalizeEventDoc, type EventRecord } from "../../../lib/schemas";
+import { useAuth } from "../../../components/providers/AuthProvider";
 
-export default function EventPage(){
+export default function EventPage() {
+  const params = useParams<{ id?: string; eventId?: string }>();
+  const eventId = useMemo(() => params?.id ?? params?.eventId ?? "", [params]);
 
-const params = useParams();
+  const { user } = useAuth();
 
-const [event,setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventRecord | null>(null);
 
-useEffect(()=>{
+  useEffect(() => {
+    if (!eventId) {
+      return;
+    }
 
-const loadEvent = async()=>{
+    const loadEvent = async () => {
+      const ref = doc(db, "events", eventId);
+      const snapshot = await getDoc(ref);
 
-const ref = doc(db,"events",params.id as string);
+      if (snapshot.exists()) {
+        setEvent(normalizeEventDoc(snapshot.id, snapshot.data()));
+      }
+    };
 
-const snapshot = await getDoc(ref);
+    loadEvent().catch((error) => {
+      console.error("Error loading event:", error);
+    });
+  }, [eventId]);
 
-if(snapshot.exists()){
+  const signup = async () => {
+    if (!user) {
+      alert("Login required");
+      return;
+    }
 
-setEvent(snapshot.data());
+    if (!eventId || !event) {
+      alert("Invalid event id");
+      return;
+    }
 
+    if (event.volunteers.includes(user.uid)) {
+      alert("You already joined this cleanup.");
+      return;
+    }
+
+    await updateDoc(doc(db, "events", eventId), {
+      volunteers: arrayUnion(user.uid),
+    });
+
+    setEvent((prev) => {
+      if (!prev) return prev;
+
+      return {
+        ...prev,
+        volunteers: [...prev.volunteers, user.uid],
+      };
+    });
+  };
+
+  if (!event) {
+    return (
+      <div className="page-loader">
+        <div className="loader-card">
+          <p className="loader-title">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <section className="page" style={{ maxWidth: "760px" }}>
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">{event.title}</h1>
+          <p className="page-subtitle">{event.description}</p>
+        </div>
+      </header>
+
+      <div className="panel">
+        <p className="muted">Date: {event.date}</p>
+        <p className="muted">District: {event.district}</p>
+        <p className="muted">Volunteers: {event.volunteers.length}</p>
+
+        <button type="button" className="btn btn-primary" onClick={signup}>
+          Join cleanup
+        </button>
+      </div>
+    </section>
+  );
 }
 
-};
 
-loadEvent();
-
-},[]);
-
-const signup = async()=>{
-
-if(!auth.currentUser){
-
-alert("Login required");
-
-return;
-
-}
-
-const ref = doc(db,"events",params.id as string);
-
-await updateDoc(ref,{
-
-attendees:arrayUnion(auth.currentUser.uid)
-
-});
-
-alert("You joined the cleanup!");
-
-};
-
-if(!event) return <p>Loading...</p>;
-
-return(
-
-<div style={{maxWidth:"700px",margin:"auto",padding:"40px"}}>
-
-<h1>{event.title}</h1>
-
-<p>{event.description}</p>
-
-<p>Date: {event.date}</p>
-
-<p>Volunteers: {event.attendees?.length || 0}</p>
-
-<button onClick={signup}>
-Join Cleanup
-</button>
-
-</div>
-
-);
-
-}

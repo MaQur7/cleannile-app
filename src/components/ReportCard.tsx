@@ -1,80 +1,97 @@
+import Image from "next/image";
+import type { ReportRecord } from "../lib/schemas";
+
+type ReportCardProps = {
+  report: ReportRecord;
+  approveReport?: (id: string) => void;
+  rejectReport?: (id: string) => void;
+  showStatus?: boolean;
+};
+
 export default function ReportCard({
-report,
-approveReport,
-rejectReport
-}: any) {
+  report,
+  approveReport,
+  rejectReport,
+  showStatus = false,
+}: ReportCardProps) {
+  const latitude = report.location?.latitude;
+  const longitude = report.location?.longitude;
 
-return (
-
-<div
-  style={{
-    border: "1px solid #e0e0e0",
-    borderRadius: "12px",
-    padding: "20px",
-    marginBottom: "20px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    backgroundColor: "#ffffff",
-  }}
->
-
-  <div style={{ marginBottom: "10px" }}>
-    <strong style={{ fontSize: "16px", textTransform: "capitalize" }}>
-      {report.category}
-    </strong>
-  </div>
-
-  <p style={{ marginBottom: "15px", lineHeight: "1.5" }}>
-    {report.description}
-  </p>
-
-  <img
-    src={report.photoURL}
-    alt="Report"
-    style={{
-      width: "100%",
-      maxHeight: "250px",
-      objectFit: "cover",
-      borderRadius: "8px",
-      marginBottom: "15px",
-    }}
-  />
-
-  {approveReport && rejectReport && (
-    <div style={{ display: "flex", gap: "10px" }}>
-
-      <button
-        onClick={() => approveReport(report.id)}
+  return (
+    <article className="card report-card">
+      <div
         style={{
-          backgroundColor: "#28a745",
-          color: "#fff",
-          border: "none",
-          padding: "10px 16px",
-          borderRadius: "6px",
-          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "0.6rem",
+          flexWrap: "wrap",
         }}
       >
-        Approve
-      </button>
+        <h4 style={{ margin: 0, textTransform: "capitalize" }}>{report.category}</h4>
 
-      <button
-        onClick={() => rejectReport(report.id)}
-        style={{
-          backgroundColor: "#dc3545",
-          color: "#fff",
-          border: "none",
-          padding: "10px 16px",
-          borderRadius: "6px",
-          cursor: "pointer",
-        }}
-      >
-        Reject
-      </button>
+        <div style={{ display: "flex", gap: "0.45rem", flexWrap: "wrap" }}>
+          <span className={`severity-badge ${report.severity}`}>{report.severity}</span>
+          {showStatus && (
+            <span className={`status-badge ${report.status}`}>{report.status}</span>
+          )}
+        </div>
+      </div>
 
-    </div>
-  )}
+      <p style={{ marginTop: "0.7rem" }}>{report.description || "No description provided."}</p>
 
-</div>
+      <div className="report-meta-grid">
+        <div>
+          <p className="stat-label">District</p>
+          <p className="muted" style={{ margin: 0 }}>{report.district}</p>
+        </div>
 
-);
+        <div>
+          <p className="stat-label">Coordinates</p>
+          <p className="muted" style={{ margin: 0 }}>
+            {latitude != null && longitude != null
+              ? `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+              : "Not available"}
+          </p>
+        </div>
+      </div>
 
+      {report.photoURL && (
+        <Image
+          src={report.photoURL}
+          alt="Report evidence"
+          width={1280}
+          height={720}
+          className="report-photo"
+          unoptimized
+        />
+      )}
+
+      {approveReport && rejectReport && (
+        <div
+          style={{
+            display: "flex",
+            gap: "0.65rem",
+            marginTop: "0.9rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() => approveReport(report.id)}
+          >
+            Approve
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-danger btn-sm"
+            onClick={() => rejectReport(report.id)}
+          >
+            Reject
+          </button>
+        </div>
+      )}
+    </article>
+  );
 }

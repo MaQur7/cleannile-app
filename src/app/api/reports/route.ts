@@ -1,54 +1,66 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import admin from "firebase-admin";
+import {
+  adminDb,
+  serverTimestamp,
+  verifyRequestToken,
+} from "../../../lib/firebase-admin";
+import { reportSubmissionSchema } from "../../../lib/schemas";
+import { buildSpatialIndex } from "../../../lib/spatial";
 
-// Initialize Firebase Admin (only once)
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.ADMIN_PROJECT_ID,
-      clientEmail: process.env.ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    }),
-  });
+function errorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }
 
-const db = admin.firestore();
-
-// Define validation schema
-const reportSchema = z.object({
-  category: z.string().min(2),
-  description: z.string().min(5),
-  photoURL: z.string().url(),
-  latitude: z.number(),
-  longitude: z.number(),
-  userId: z.string(),
-});
-
 export async function POST(req: Request) {
+  const identity = await verifyRequestToken(req);
+
+  if (!identity) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
+    const validated = reportSubmissionSchema.parse(body);
+    const spatial = buildSpatialIndex(validated.latitude, validated.longitude);
+    const district = validated.district?.trim() ? validated.district.trim() : "Unassigned";
+    const capturedAt = validated.capturedAt ? new Date(validated.capturedAt) : new Date();
+    const capturedAtIso = capturedAt.toISOString();
 
-    // Validate input
-    const validated = reportSchema.parse(body);
-
-    await db.collection("reports").add({
+    const created = await adminDb.collection("reports").add({
       category: validated.category,
+      severity: validated.severity,
+      district,
+      source: validated.source,
       description: validated.description,
       photoURL: validated.photoURL,
       location: {
-        latitude: validated.latitude,
-        longitude: validated.longitude,
+        latitude: spatial.latitude,
+        longitude: spatial.longitude,
+      },
+      latitude: spatial.latitude,
+      longitude: spatial.longitude,
+      spatial: {
+        tokens: spatial.tokens,
+        cell1: spatial.cell1,
+        cell025: spatial.cell025,
+        cell005: spatial.cell005,
+      },
+      capturedAt,
+      temporal: {
+        day: capturedAtIso.slice(0, 10),
+        month: capturedAtIso.slice(0, 7),
       },
       status: "pending",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      userId: validated.userId,
+      createdAt: serverTimestamp(),
+      userId: identity.uid,
+      moderatedAt: null,
+      moderatedBy: null,
     });
 
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
+    return NextResponse.json({ success: true, id: created.id });
+  } catch (error) {
     return NextResponse.json(
-      { error: error.message },
+      { error: errorMessage(error, "Invalid report payload") },
       { status: 400 }
     );
   }

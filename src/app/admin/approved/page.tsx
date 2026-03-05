@@ -1,53 +1,76 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import AdminGuard from "../../../components/AdminGuard";
+import ReportCard from "../../../components/ReportCard";
 import { db } from "../../../lib/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { normalizeReportDoc, type ReportRecord } from "../../../lib/schemas";
+
+const APPROVED_REPORT_LIMIT = 200;
 
 export default function ApprovedReports() {
-  const [reports, setReports] = useState<any[]>([]);
+  const [reports, setReports] = useState<ReportRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadReports = async () => {
-      const q = query(
+      const approvedQuery = query(
         collection(db, "reports"),
-        where("status", "==", "approved")
+        where("status", "==", "approved"),
+        orderBy("createdAt", "desc"),
+        limit(APPROVED_REPORT_LIMIT)
       );
 
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(approvedQuery);
 
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const data = snapshot.docs.map((item) =>
+        normalizeReportDoc(item.id, item.data())
+      );
 
       setReports(data);
+      setLoading(false);
     };
 
-    loadReports();
+    loadReports().catch((error) => {
+      console.error("Error loading approved reports:", error);
+      setLoading(false);
+    });
   }, []);
 
   return (
-    <main style={{ padding: "40px", maxWidth: "900px", margin: "auto" }}>
-      <h1>Approved Reports</h1>
+    <AdminGuard>
+      <section className="page">
+        <header className="page-header">
+          <div>
+            <h1 className="page-title">Approved Reports</h1>
+            <p className="page-subtitle">
+              Published reports visible to the geospatial map and public data surfaces.
+            </p>
+          </div>
+        </header>
 
-      {reports.map((report) => (
-        <div key={report.id} style={{
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          padding: "15px",
-          marginBottom: "15px"
-        }}>
-          <strong>{report.category}</strong>
+        {loading && <div className="panel muted">Loading approved reports...</div>}
 
-          <p>{report.description}</p>
+        {!loading && reports.length === 0 && (
+          <div className="empty-state">No approved reports found.</div>
+        )}
 
-          <img
-            src={report.photoURL}
-            style={{ width: "200px", borderRadius: "6px" }}
-          />
-        </div>
-      ))}
-    </main>
+        {!loading && reports.length > 0 && (
+          <div className="grid">
+            {reports.map((report) => (
+              <ReportCard key={report.id} report={report} showStatus />
+            ))}
+          </div>
+        )}
+      </section>
+    </AdminGuard>
   );
 }

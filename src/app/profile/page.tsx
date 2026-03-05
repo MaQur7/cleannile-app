@@ -1,139 +1,126 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { auth, db } from "../../lib/firebase";
 import {
-doc,
-onSnapshot,
-collection,
-query,
-where,
-getDoc,
+  collection,
+  doc,
+  getDoc,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
 } from "firebase/firestore";
-
 import AuthGuard from "../../components/AuthGuard";
+import { useAuth } from "../../components/providers/AuthProvider";
+import ReportCard from "../../components/ReportCard";
+import { db } from "../../lib/firebase";
+import {
+  normalizeReportDoc,
+  normalizeUserDoc,
+  type ReportRecord,
+  type UserRecord,
+} from "../../lib/schemas";
+
+const PROFILE_REPORT_LIMIT = 100;
 
 export default function ProfilePage() {
-const router = useRouter();
+  const { user, role } = useAuth();
 
-const [loading, setLoading] = useState(true);
-const [userData, setUserData] = useState<any>(null);
-const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<UserRecord | null>(null);
+  const [reports, setReports] = useState<ReportRecord[]>([]);
 
-useEffect(() => {
-let unsubscribeReports: any;
-
-const unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
-  if (!user) {
-    router.push("/login");
-    return;
-  }
-
-  try {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-
-    if (userDoc.exists()) {
-      setUserData(userDoc.data());
+  useEffect(() => {
+    if (!user) {
+      return;
     }
 
-    const q = query(
-      collection(db, "reports"),
-      where("userId", "==", user.uid)
-    );
+    let unsubscribeReports: (() => void) | undefined;
 
-    unsubscribeReports = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    const loadProfile = async () => {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
 
-      setReports(data);
-    });
+        if (userDoc.exists()) {
+          setUserData(normalizeUserDoc(userDoc.id, userDoc.data()));
+        }
 
-    setLoading(false);
-  } catch (error) {
-    console.error("Error loading profile:", error);
-  }
-});
+        const reportQuery = query(
+          collection(db, "reports"),
+          where("userId", "==", user.uid),
+          orderBy("createdAt", "desc"),
+          limit(PROFILE_REPORT_LIMIT)
+        );
 
-return () => {
-  if (unsubscribeReports) unsubscribeReports();
-  unsubscribeAuth();
-};
+        unsubscribeReports = onSnapshot(reportQuery, (snapshot) => {
+          const data = snapshot.docs.map((item) =>
+            normalizeReportDoc(item.id, item.data())
+          );
 
-}, [router]);
+          setReports(data);
+          setLoading(false);
+        });
+      } catch (error) {
+        console.error("Error loading profile:", error);
+        setLoading(false);
+      }
+    };
 
-if (loading) return <div>Loading profile...</div>;
+    void loadProfile();
 
-return ( <AuthGuard>
-<div
-style={{
-padding: "40px",
-maxWidth: "900px",
-margin: "0 auto",
-fontFamily: "system-ui, sans-serif",
-}}
-> <h1>My Profile</h1>
+    return () => {
+      if (unsubscribeReports) {
+        unsubscribeReports();
+      }
+    };
+  }, [user]);
 
-    <div
-      style={{
-        background: "#f8f9fa",
-        padding: "20px",
-        borderRadius: "10px",
-        marginBottom: "30px",
-      }}
-    >
-      <p><strong>Email:</strong> {auth.currentUser?.email}</p>
-      <p><strong>Role:</strong> {userData?.role}</p>
-    </div>
+  return (
+    <AuthGuard>
+      <section className="page">
+        <header className="page-header">
+          <div>
+            <h1 className="page-title">My Profile</h1>
+            <p className="page-subtitle">
+              Review your contributor details and the moderation status of submitted reports.
+            </p>
+          </div>
+        </header>
 
-    <h2>My Reports</h2>
+        <div className="grid two">
+          <div className="panel">
+            <p className="stat-label">Email</p>
+            <p className="stat-value" style={{ fontSize: "1rem" }}>
+              {user?.email ?? "Unknown"}
+            </p>
+          </div>
+          <div className="panel">
+            <p className="stat-label">Role</p>
+            <p className="stat-value" style={{ textTransform: "capitalize" }}>
+              {role ?? userData?.role ?? "user"}
+            </p>
+          </div>
+        </div>
 
-    {reports.length === 0 && (
-      <p>You have not submitted any reports.</p>
-    )}
+        <section className="panel">
+          <h2 style={{ marginTop: 0 }}>My Reports</h2>
 
-    {reports.map((report) => (
-      <div
-        key={report.id}
-        style={{
-          border: "1px solid #ddd",
-          padding: "15px",
-          borderRadius: "8px",
-          marginBottom: "15px",
-        }}
-      >
-        <p><strong>{report.category}</strong></p>
-        <p>{report.description}</p>
+          {loading && <p className="muted">Loading your reports...</p>}
 
-        <p>
-          <strong>Status:</strong>{" "}
-          <span
-            style={{
-              color:
-                report.status === "approved"
-                  ? "green"
-                  : report.status === "rejected"
-                  ? "red"
-                  : "orange",
-            }}
-          >
-            {report.status}
-          </span>
-        </p>
+          {!loading && reports.length === 0 && (
+            <div className="empty-state">You have not submitted any reports yet.</div>
+          )}
 
-        <img
-          src={report.photoURL}
-          alt="Report"
-          style={{
-            width: "200px",
-            borderRadius: "6px",
-          }}
-        />
-      </div>
-    ))}
-  </div>
-</AuthGuard>
-);
+          {!loading && reports.length > 0 && (
+            <div className="grid">
+              {reports.map((report) => (
+                <ReportCard key={report.id} report={report} showStatus />
+              ))}
+            </div>
+          )}
+        </section>
+      </section>
+    </AuthGuard>
+  );
 }

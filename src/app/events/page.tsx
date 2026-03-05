@@ -1,103 +1,113 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  arrayUnion,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
-
-import { auth } from "../../lib/firebase";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { normalizeEventDoc, type EventRecord } from "../../lib/schemas";
+import { useAuth } from "../../components/providers/AuthProvider";
 
 export default function EventsPage() {
+  const { user } = useAuth();
 
-const [events,setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
-useEffect(()=>{
+  useEffect(() => {
+    const loadEvents = async () => {
+      const eventsQuery = query(collection(db, "events"), orderBy("date", "asc"));
+      const snapshot = await getDocs(eventsQuery);
+      const data = snapshot.docs.map((item) =>
+        normalizeEventDoc(item.id, item.data())
+      );
 
-const loadEvents = async()=>{
+      setEvents(data);
+      setLoading(false);
+    };
 
-const snapshot = await getDocs(collection(db,"events"));
+    loadEvents().catch((error) => {
+      console.error("Error loading events:", error);
+      setLoading(false);
+    });
+  }, []);
 
-const data = snapshot.docs.map(doc=>({
-id:doc.id,
-...doc.data()
-}));
+  const joinEvent = async (event: EventRecord) => {
+    if (!user) {
+      alert("Please sign in to join this event.");
+      return;
+    }
 
-setEvents(data);
+    if (event.volunteers.includes(user.uid)) {
+      alert("You already joined this event.");
+      return;
+    }
 
-};
+    await updateDoc(doc(db, "events", event.id), {
+      volunteers: arrayUnion(user.uid),
+    });
 
-loadEvents();
+    setEvents((prev) =>
+      prev.map((item) =>
+        item.id === event.id
+          ? {
+              ...item,
+              volunteers: [...item.volunteers, user.uid],
+            }
+          : item
+      )
+    );
+  };
 
-},[]);
+  return (
+    <section className="page">
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">Community Cleanup Events</h1>
+          <p className="page-subtitle">
+            Coordinate volunteers, track participation, and mobilize local cleanup teams.
+          </p>
+        </div>
+      </header>
 
-const joinEvent = async (event:any) => {
+      {loading && <div className="panel muted">Loading events...</div>}
 
-const user = auth.currentUser;
+      {!loading && events.length === 0 && (
+        <div className="empty-state">No cleanup events scheduled yet.</div>
+      )}
 
-if(!user){
-alert("Please login.");
-return;
+      {!loading && events.length > 0 && (
+        <div className="grid two">
+          {events.map((event) => (
+            <article key={event.id} className="card">
+              <h3>{event.title}</h3>
+              <p>{event.description}</p>
+              <p className="muted" style={{ marginTop: "0.6rem" }}>
+                Date: {event.date}
+              </p>
+              <p className="muted">District: {event.district}</p>
+              <p className="muted">Volunteers: {event.volunteers.length}</p>
+
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                style={{ marginTop: "0.85rem" }}
+                onClick={() => joinEvent(event)}
+              >
+                Join Cleanup
+              </button>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
 
-if(event.volunteers?.includes(user.uid)){
-alert("You already joined this event.");
-return;
-}
 
-await updateDoc(doc(db,"events",event.id),{
-volunteers: arrayUnion(user.uid)
-});
-
-alert("You joined the cleanup event!");
-
-};
-
-return(
-
-<div style={{padding:"40px",maxWidth:"900px",margin:"auto"}}>
-
-<h1>Community Cleanup Events</h1>
-
-{events.length === 0 && <p>No events yet.</p>}
-
-{events.map((event)=>(
-
-<div key={event.id}
-style={{
-border:"1px solid #ddd",
-padding:"15px",
-borderRadius:"8px",
-marginBottom:"15px"
-}}>
-
-<h3>{event.title}</h3>
-<p>{event.description}</p>
-<p>{event.date}</p>
-
-<p>
-Volunteers: {event.volunteers ? event.volunteers.length : 0}
-</p>
-
-<button
-onClick={()=>joinEvent(event)}
-style={{
-marginTop:"10px",
-padding:"8px 14px",
-background:"#2c7be5",
-color:"#fff",
-border:"none",
-borderRadius:"6px",
-cursor:"pointer"
-}}
->
-Join Cleanup
-</button>
-
-</div>
-))}
-
-</div>
-
-);
-
-}

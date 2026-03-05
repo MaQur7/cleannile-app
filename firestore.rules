@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function adminByClaim() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function adminByRoleDoc() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    function isAdmin() {
+      return adminByClaim() || adminByRoleDoc();
+    }
+
+    function isSelf(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function existingVolunteers() {
+      return resource.data.volunteers is list ? resource.data.volunteers : [];
+    }
+
+    match /users/{userId} {
+      allow read: if isSelf(userId) || isAdmin();
+      allow create: if isSelf(userId) && request.resource.data.role == "user";
+      allow update: if isSelf(userId) && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+
+    match /reports/{reportId} {
+      allow read: if isAdmin() || resource.data.status == "approved";
+      allow create, update, delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow update: if signedIn() &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(["volunteers"]) &&
+        request.resource.data.volunteers is list &&
+        request.resource.data.volunteers.hasAll(existingVolunteers()) &&
+        request.resource.data.volunteers.size() <= existingVolunteers().size() + 1 &&
+        request.auth.uid in request.resource.data.volunteers;
+      allow create, delete: if isAdmin();
+    }
+  }
+}
+

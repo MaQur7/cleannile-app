@@ -1,82 +1,149 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "../../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
 import AuthGuard from "../../components/AuthGuard";
+import { useAuth } from "../../components/providers/AuthProvider";
+
+type DashboardTile = {
+  href: string;
+  title: string;
+  description: string;
+  adminOnly?: boolean;
+  emphasis?: "field" | "admin";
+};
+
+const TILES: DashboardTile[] = [
+  {
+    href: "/capture",
+    title: "Field Quick Capture",
+    description: "One-tap mobile capture with GPS, camera, and offline queue.",
+    emphasis: "field",
+  },
+  {
+    href: "/report/new",
+    title: "Detailed Report Form",
+    description: "Submit richer contextual reports with guided metadata fields.",
+  },
+  {
+    href: "/events",
+    title: "Community Events",
+    description: "Join cleanup activities and coordinate volunteers.",
+  },
+  {
+    href: "/profile",
+    title: "My Profile",
+    description: "Track your submitted reports and approval outcomes.",
+  },
+  {
+    href: "/admin",
+    title: "Moderation Queue",
+    description: "Review pending reports and publish verified incidents.",
+    adminOnly: true,
+    emphasis: "admin",
+  },
+  {
+    href: "/map",
+    title: "GIS Workspace",
+    description: "Analyze hotspots, map layers, and temporal incident patterns.",
+    adminOnly: true,
+    emphasis: "admin",
+  },
+];
 
 export default function DashboardPage() {
-const router = useRouter();
+  const router = useRouter();
+  const { role, isAdmin, user, signOutUser } = useAuth();
 
-const [role, setRole] = useState("");
+  useEffect(() => {
+    const prefetchTargets = [
+      "/capture",
+      "/report/new",
+      "/events",
+      "/profile",
+      "/admin",
+      "/map",
+    ];
 
-useEffect(() => {
-const unsubscribe = auth.onAuthStateChanged(async (user) => {
-if (!user) {
-router.push("/login");
-return;
-}
+    prefetchTargets.forEach((path) => {
+      router.prefetch(path);
+    });
+  }, [router]);
 
-  try {
-    const ref = doc(db, "users", user.uid);
-    const snapshot = await getDoc(ref);
+  const availableTiles = TILES.filter((tile) => !tile.adminOnly || isAdmin);
 
-    if (snapshot.exists()) {
-      setRole(snapshot.data().role);
-    }
-  } catch (error) {
-    console.error("Error loading user role:", error);
-  }
-});
+  return (
+    <AuthGuard>
+      <section className="page">
+        <header className="page-header">
+          <div>
+            <h1 className="page-title">Operations Dashboard</h1>
+            <p className="page-subtitle">
+              Central workspace for field reporting, geospatial intelligence, and coordinated response.
+            </p>
+          </div>
 
-return () => unsubscribe();
+          <div className="stats-row" style={{ minWidth: "220px" }}>
+            <div className="stat-tile">
+              <p className="stat-label">Signed in as</p>
+              <p className="stat-value" style={{ fontSize: "1rem" }}>
+                {user?.email ?? "Unknown"}
+              </p>
+            </div>
+            <div className="stat-tile">
+              <p className="stat-label">Role</p>
+              <p className="stat-value" style={{ textTransform: "capitalize" }}>
+                {role ?? "user"}
+              </p>
+            </div>
+          </div>
+        </header>
 
-}, [router]);
+        <div className="grid three">
+          {availableTiles.map((tile) => (
+            <article
+              key={tile.href}
+              className={`card dashboard-tile ${tile.emphasis ? `dashboard-${tile.emphasis}` : ""}`}
+            >
+              <h3>{tile.title}</h3>
+              <p>{tile.description}</p>
+              <div style={{ marginTop: "0.8rem" }}>
+                <Link href={tile.href} className="btn btn-primary btn-sm">
+                  Open
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
 
-return ( <AuthGuard>
-<div style={{ padding: "20px" }}> <h1>Dashboard</h1> <p>Welcome to CleanNile dashboard.</p>
-
-
-  {role === "admin" && (
-    <>
-      <button onClick={() => router.push("/admin")}>
-        Admin Panel
-      </button>
-
-      <br /><br />
-
-      <button onClick={() => router.push("/map")}>
-        View Map
-      </button>
-
-      <br /><br />
-    </>
-  )}
-
-  <button onClick={() => router.push("/profile")}>
-    My Profile
-  </button>
-
-  <br /><br />
-
-  <button onClick={() => router.push("/report/new")}>
-    Submit Report
-  </button>
-
-  <br /><br />
-
-  <button onClick={() => router.push("/events")}>
-    Events
-  </button>
-
-  <br /><br />
-
-  <button onClick={() => auth.signOut()}>
-    Logout
-  </button>
-</div>
-
-  </AuthGuard>
-);
+        <div
+          className="panel"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "0.8rem",
+            flexWrap: "wrap",
+          }}
+        >
+          <p className="muted" style={{ margin: 0 }}>
+            Core routes are prefetched for smoother transitions.
+          </p>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              signOutUser()
+                .then(() => router.replace("/login"))
+                .catch((error) => {
+                  console.error("Sign out failed:", error);
+                });
+            }}
+          >
+            Log out
+          </button>
+        </div>
+      </section>
+    </AuthGuard>
+  );
 }

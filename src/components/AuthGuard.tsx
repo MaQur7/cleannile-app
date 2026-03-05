@@ -1,38 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "../lib/firebase";
+import { useAuth } from "./providers/AuthProvider";
+import PageLoader from "./ui/PageLoader";
 
 export default function AuthGuard({
-children,
+  children,
 }: {
-children: React.ReactNode;
+  children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const { loading, isAuthenticated } = useAuth();
 
-const router = useRouter();
-const [checking, setChecking] = useState(true);
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isAuthenticated, loading, router]);
 
-useEffect(() => {
-
-const unsubscribe = auth.onAuthStateChanged((user) => {
-
-  if (!user) {
-    router.push("/login");
-    return;
+  if (loading || !isAuthenticated) {
+    return (
+      <PageLoader
+        title="Authenticating"
+        description="Restoring your session and verifying access."
+      />
+    );
   }
 
-  setChecking(false);
-
-});
-
-return () => unsubscribe();
-
-}, [router]);
-
-if (checking) {
-return <div style={{ padding: "40px" }}>Checking login...</div>;
-}
-
-return <>{children}</>;
+  return <>{children}</>;
 }

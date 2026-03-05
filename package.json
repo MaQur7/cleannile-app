@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate:firestore-schema": "node scripts/migrate-firestore-schema.mjs"
   },
   "engines": {
     "node": "20"
@@ -42,3 +43,4 @@
     "typescript": "^5"
   }
 }
+

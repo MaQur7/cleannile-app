@@ -1,47 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { auth, db } from "../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { useAuth } from "./providers/AuthProvider";
+import PageLoader from "./ui/PageLoader";
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { loading, isAuthenticated, isAdmin } = useAuth();
 
-const router = useRouter();
-const [checking, setChecking] = useState(true);
+  useEffect(() => {
+    if (loading) return;
 
-useEffect(() => {
-const unsubscribe = auth.onAuthStateChanged(async (user) => {
-
-  if (!user) {
-    router.push("/login");
-    return;
-  }
-
-  try {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-
-    if (!userDoc.exists() || userDoc.data().role !== "admin") {
-      router.push("/dashboard");
+    if (!isAuthenticated) {
+      router.replace("/login");
       return;
     }
 
-    setChecking(false);
+    if (!isAdmin) {
+      router.replace("/dashboard");
+    }
+  }, [isAdmin, isAuthenticated, loading, router]);
 
-  } catch (error) {
-    console.error("Admin check failed:", error);
-    router.push("/dashboard");
+  if (loading || !isAuthenticated || !isAdmin) {
+    return (
+      <PageLoader
+        title="Checking permissions"
+        description="Verifying administrator access rights."
+      />
+    );
   }
 
-});
-
-return () => unsubscribe();
-
-}, [router]);
-
-if (checking) {
-return <div style={{ padding: "40px" }}>Checking permissions...</div>;
-}
-
-return <>{children}</>;
+  return <>{children}</>;
 }

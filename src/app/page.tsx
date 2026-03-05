@@ -1,11 +1,44 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
-    <main style={{ padding: "20px" }}>
-      <h1>CleanNile App</h1>
+    <section className="page">
+      <header className="page-header">
+        <div>
+          <h1 className="page-title">CleanNile Geospatial Intelligence Platform</h1>
+          <p className="page-subtitle">
+            Capture environmental incidents in the field, verify submissions through moderated workflows,
+            and analyze pollution patterns through GIS-ready dashboards.
+          </p>
+        </div>
+      </header>
 
-      <a href="/login">
-        <button>Go to Login</button>
-      </a>
-    </main>
+      <div className="grid three">
+        <article className="card dashboard-field">
+          <h3>Quick Field Capture</h3>
+          <p>Mobile-first reporting with GPS lock, camera capture, and offline queue support.</p>
+        </article>
+        <article className="card">
+          <h3>Moderated Data Integrity</h3>
+          <p>Administrator verification pipeline ensures only validated incidents reach map intelligence layers.</p>
+        </article>
+        <article className="card dashboard-admin">
+          <h3>GIS Operations</h3>
+          <p>Clustered mapping, hotspot heat analysis, and district-level trend tracking for response teams.</p>
+        </article>
+      </div>
+
+      <div className="panel" style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
+        <Link href="/login" className="btn btn-primary">
+          Enter Platform
+        </Link>
+        <Link href="/capture" className="btn btn-secondary">
+          Open Quick Capture
+        </Link>
+        <Link href="/events" className="btn btn-ghost">
+          View Community Events
+        </Link>
+      </div>
+    </section>
   );
 }
