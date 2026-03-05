@@ -1,144 +1,59 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { auth } from "../../lib/firebase";
-import { db, storage } from "../../lib/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useRouter } from "next/navigation";
-import AuthGuard from "../../components/AuthGuard";
+import { useEffect, useState } from "react";
+import { db } from "../../lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 
-export default function NewReportPage() {
-const [description, setDescription] = useState("");
-const [category, setCategory] = useState("pollution");
-const [photo, setPhoto] = useState<File | null>(null);
-const [loading, setLoading] = useState(false);
+export default function EventsPage() {
 
-const fileInputRef = useRef<HTMLInputElement | null>(null);
-const router = useRouter();
+const [events,setEvents] = useState<any[]>([]);
 
-const handleSubmit = async () => {
+useEffect(()=>{
 
-if (!auth.currentUser) {
-  alert("You must be logged in.");
-  return;
-}
+const loadEvents = async()=>{
 
-if (!photo) {
-  alert("Please upload a photo.");
-  return;
-}
+const snapshot = await getDocs(collection(db,"events"));
 
-setLoading(true);
+const data = snapshot.docs.map(doc=>({
+id:doc.id,
+...doc.data()
+}));
 
-try {
-
-  const photoRef = ref(storage, `reports/${Date.now()}-${photo.name}`);
-  await uploadBytes(photoRef, photo);
-
-  const photoURL = await getDownloadURL(photoRef);
-
-  navigator.geolocation.getCurrentPosition(
-
-    async (position) => {
-
-      const { latitude, longitude } = position.coords;
-
-      try {
-
-        await fetch("/api/reports", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            category,
-            description,
-            photoURL,
-            latitude,
-            longitude,
-            userId: auth.currentUser?.uid,
-          }),
-        });
-
-        alert("Report submitted successfully!");
-
-        setDescription("");
-        setCategory("pollution");
-        setPhoto(null);
-
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-
-        setLoading(false);
-
-      } catch (error: any) {
-
-        console.error("Firestore error:", error);
-        setLoading(false);
-
-      }
-    },
-
-    (error: GeolocationPositionError) => {
-
-      console.error("Location error:", error);
-      alert("Location permission denied.");
-      setLoading(false);
-
-    }
-  );
-
-} catch (error: any) {
-
-  console.error("Upload error:", error.message);
-  setLoading(false);
-
-}
+setEvents(data);
 
 };
 
-return ( <AuthGuard>
-<main style={{ padding: "20px" }}> <h1>Submit a Report</h1>
+loadEvents();
 
-    <select
-      value={category}
-      onChange={(e) => setCategory(e.target.value)}
-    >
-      <option value="pollution">Pollution</option>
-      <option value="waste">Waste Dumping</option>
-      <option value="water">Water Contamination</option>
-    </select>
+},[]);
 
-    <br /><br />
+return(
 
-    <textarea
-      placeholder="Describe the issue"
-      value={description}
-      onChange={(e) => setDescription(e.target.value)}
-    />
+<div style={{padding:"40px",maxWidth:"900px",margin:"auto"}}>
 
-    <br /><br />
+<h1>Community Cleanup Events</h1>
 
-    <input
-      ref={fileInputRef}
-      type="file"
-      accept="image/*"
-      capture="environment"
-      onChange={(e) => {
-        if (e.target.files) {
-          setPhoto(e.target.files[0]);
-        }
-      }}
-    />
+{events.length === 0 && <p>No events yet.</p>}
 
-    <br /><br />
+{events.map((event)=>(
 
-    <button onClick={handleSubmit} disabled={loading}>
-      {loading ? "Submitting..." : "Submit Report"}
-    </button>
-  </main>
-</AuthGuard>
+<div key={event.id}
+style={{
+border:"1px solid #ddd",
+padding:"15px",
+borderRadius:"8px",
+marginBottom:"15px"
+}}>
+
+<h3>{event.title}</h3>
+<p>{event.description}</p>
+<p>{event.date}</p>
+
+</div>
+))}
+
+</div>
 
 );
+
 }
