@@ -22,6 +22,9 @@ import {
   REPORT_SEVERITIES,
 } from "../../lib/schemas";
 
+// Type declaration for heic2any
+declare function heic2any(options: { blob: Blob }): Promise<Blob | Blob[]>;
+
 /**
  * Enhanced category with quick-capture metadata
  */
@@ -232,8 +235,8 @@ export default function RapidFieldCapturePage() {
     try {
       let photoURL = "";
 
-      if (online) {
-        const uploadedURL = await uploadReportPhoto(photo);
+      if (online && user) {
+        const uploadedURL = await uploadReportPhoto(photo, user.uid);
         photoURL = uploadedURL;
       }
 
@@ -251,10 +254,28 @@ export default function RapidFieldCapturePage() {
 
       if (online && user) {
         const token = await getIdToken();
-        await createReport(reportData, token);
-        setMessage("✓ Report submitted successfully!");
+        if (token) {
+          await createReport(token, reportData);
+          setMessage("✓ Report submitted successfully!");
+        } else {
+          throw new Error("Authentication required");
+        }
       } else {
-        enqueueReport(reportData);
+        // Convert to QueuedReport format for offline storage
+        const queuedItem: QueuedReport = {
+          id: `offline-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          category,
+          severity,
+          district,
+          description,
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          photoDataURL: photoURL,
+          source: "field-capture",
+          capturedAt: new Date().toISOString(),
+          queuedAt: new Date().toISOString(),
+        };
+        enqueueReport(queuedItem);
         setMessage("✓ Report saved offline. It will sync when connection is available.");
       }
 
@@ -284,9 +305,23 @@ export default function RapidFieldCapturePage() {
 
     try {
       const token = await getIdToken();
+      if (!token) {
+        throw new Error("Authentication required");
+      }
 
       for (const item of queued) {
-        await createReport(item.data, token);
+        const reportData = {
+          category: item.category,
+          severity: item.severity,
+          district: item.district,
+          description: item.description,
+          photoURL: item.photoDataURL,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          source: item.source,
+          capturedAt: item.capturedAt,
+        };
+        await createReport(token, reportData);
         removeQueuedReport(item.id);
       }
 

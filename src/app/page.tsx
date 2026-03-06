@@ -28,16 +28,26 @@ export default function Home() {
         </article>
       </div>
 
-      <div className="panel" style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
-        <Link href="/login" className="btn btn-primary">
-          Enter Platform
-        </Link>
-        <Link href="/capture" className="btn btn-secondary">
-          Open Quick Capture
-        </Link>
-        <Link href="/events" className="btn btn-ghost">
-          View Community Events
-        </Link>
+      <div className="panel">
+        <div className="grid two" style={{ marginBottom: "1.5rem" }}>
+          <div className="panel" style={{ padding: "1.5rem" }}>
+            <h4 style={{ marginBottom: "1rem", color: "var(--text)" }}>Get Started</h4>
+            <div style={{ display: "flex", gap: "0.8rem", flexDirection: "column" }}>
+              <Link href="/login" className="btn btn-primary" style={{ width: "100%" }}>
+                Enter Platform
+              </Link>
+              <Link href="/capture" className="btn btn-secondary" style={{ width: "100%" }}>
+                Quick Capture
+              </Link>
+            </div>
+          </div>
+          <div className="panel" style={{ padding: "1.5rem" }}>
+            <h4 style={{ marginBottom: "1rem", color: "var(--text)" }}>Explore</h4>
+            <Link href="/events" className="btn btn-ghost" style={{ width: "100%" }}>
+              View Community Events
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

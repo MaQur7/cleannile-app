@@ -328,6 +328,34 @@ body {
   background: rgba(255, 255, 255, 0.7);
 }
 
+/* Button group utilities */
+.btn-group {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.btn-group-vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.btn-group-vertical .btn {
+  width: 100%;
+}
+
+.btn-group-justify-end {
+  justify-content: flex-end;
+}
+
+.btn-group-justify-center {
+  justify-content: center;
+}
+
+.btn-group-justify-between {
+  justify-content: space-between;
+}
+
 .form-grid {
   display: grid;
   gap: var(--space-3);

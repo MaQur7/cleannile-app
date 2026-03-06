@@ -240,7 +240,6 @@ function ClusterLayer({
         <Marker
           key={report.id}
           position={[report.location?.latitude || 0, report.location?.longitude || 0]}
-          data={report}
           title={report.description}
         >
           <PopupContent report={report} />
@@ -296,8 +295,6 @@ function getSeverityColor(severity: ReportSeverity): string {
   };
   return colors[severity];
 }
-
-type TimeWindow = "7d" | "30d" | "90d" | "all";
 
 function toDays(window: TimeWindow) {
   if (window === "7d") {

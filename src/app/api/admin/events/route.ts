@@ -4,7 +4,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { initializeApp } from "firebase-admin/app";
 
 // Initialize Firebase Admin
-let app;
+let app: any;
 try {
   app = initializeApp({
     databaseURL: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.firebaseio.com`,

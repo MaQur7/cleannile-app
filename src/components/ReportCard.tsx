@@ -19,25 +19,19 @@ export default function ReportCard({
 
   return (
     <article className="card report-card">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "0.6rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <h4 style={{ margin: 0, textTransform: "capitalize" }}>{report.category}</h4>
-
-        <div style={{ display: "flex", gap: "0.45rem", flexWrap: "wrap" }}>
-          <span className={`severity-badge ${report.severity}`}>{report.severity}</span>
-          {showStatus && (
-            <span className={`status-badge ${report.status}`}>{report.status}</span>
-          )}
+      <header style={{ marginBottom: "0.7rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.6rem" }}>
+          <h4 style={{ margin: 0, textTransform: "capitalize", flex: 1 }}>{report.category}</h4>
+          <div style={{ display: "flex", gap: "0.45rem", flexShrink: 0 }}>
+            <span className={`severity-badge ${report.severity}`}>{report.severity}</span>
+            {showStatus && (
+              <span className={`status-badge ${report.status}`}>{report.status}</span>
+            )}
+          </div>
         </div>
-      </div>
+      </header>
 
-      <p style={{ marginTop: "0.7rem" }}>{report.description || "No description provided."}</p>
+      <p style={{ marginBottom: "0.7rem" }}>{report.description || "No description provided."}</p>
 
       <div className="report-meta-grid">
         <div>
@@ -67,30 +61,24 @@ export default function ReportCard({
       )}
 
       {approveReport && rejectReport && (
-        <div
-          style={{
-            display: "flex",
-            gap: "0.65rem",
-            marginTop: "0.9rem",
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={() => approveReport(report.id)}
-          >
-            Approve
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-danger btn-sm"
-            onClick={() => rejectReport(report.id)}
-          >
-            Reject
-          </button>
-        </div>
+        <footer style={{ marginTop: "0.9rem", paddingTop: "0.9rem", borderTop: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", gap: "0.65rem", justifyContent: "flex-end" }}>
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              onClick={() => rejectReport(report.id)}
+            >
+              Reject
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              onClick={() => approveReport(report.id)}
+            >
+              Approve
+            </button>
+          </div>
+        </footer>
       )}
     </article>
   );

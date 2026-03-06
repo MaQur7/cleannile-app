@@ -191,9 +191,10 @@ export default function EventsPage() {
       {!loading && events.length > 0 && (
         <div className="grid two">
           {events.map((event) => {
-            const isJoined = user && event.volunteers.includes(user.uid);
-            const isFull =
-              event.maxVolunteers && event.volunteers.length >= event.maxVolunteers;
+            const isJoined = Boolean(user && event.volunteers.includes(user.uid));
+            const isFull = Boolean(
+              event.maxVolunteers && event.volunteers.length >= event.maxVolunteers
+            );
             const spotsLeft = event.maxVolunteers
               ? event.maxVolunteers - event.volunteers.length
               : null;

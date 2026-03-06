@@ -83,22 +83,43 @@ export default function DashboardPage() {
               Central workspace for field reporting, geospatial intelligence, and coordinated response.
             </p>
           </div>
-
-          <div className="stats-row" style={{ minWidth: "220px" }}>
-            <div className="stat-tile">
-              <p className="stat-label">Signed in as</p>
-              <p className="stat-value" style={{ fontSize: "1rem" }}>
-                {user?.email ?? "Unknown"}
-              </p>
-            </div>
-            <div className="stat-tile">
-              <p className="stat-label">Role</p>
-              <p className="stat-value" style={{ textTransform: "capitalize" }}>
-                {role ?? "user"}
-              </p>
-            </div>
-          </div>
         </header>
+
+        {/* User Profile Section */}
+        <div className="grid two" style={{ marginBottom: "2rem" }}>
+          <article className="card">
+            <h3 style={{ marginTop: 0 }}>👤 Profile</h3>
+            <div style={{ display: "grid", gap: "0.75rem" }}>
+              <div>
+                <p className="stat-label">Email</p>
+                <p className="muted" style={{ margin: 0 }}>{user?.email ?? "Unknown"}</p>
+              </div>
+              <div>
+                <p className="stat-label">Role</p>
+                <p className="muted" style={{ margin: 0, textTransform: "capitalize" }}>
+                  {role ?? "user"}
+                </p>
+              </div>
+            </div>
+            <div style={{ marginTop: "1rem" }}>
+              <Link href="/profile" className="btn btn-secondary btn-sm">
+                View Profile
+              </Link>
+            </div>
+          </article>
+
+          <article className="card">
+            <h3 style={{ marginTop: 0 }}>🚀 Quick Actions</h3>
+            <div style={{ display: "grid", gap: "0.5rem" }}>
+              <Link href="/capture" className="btn btn-primary">
+                📱 Quick Capture
+              </Link>
+              <Link href="/report/new" className="btn btn-secondary">
+                📝 New Report
+              </Link>
+            </div>
+          </article>
+        </div>
 
         <div className="grid three">
           {availableTiles.map((tile) => (
@@ -122,7 +143,8 @@ export default function DashboardPage() {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            gap: "0.8rem",
+            alignItems: "center",
+            gap: "1rem",
             flexWrap: "wrap",
           }}
         >
@@ -140,7 +162,7 @@ export default function DashboardPage() {
                 });
             }}
           >
-            Log out
+            Sign Out
           </button>
         </div>
       </section>
