@@ -9,17 +9,22 @@ type NavItem = {
   href: string;
   label: string;
   adminOnly?: boolean;
+  section?: "user" | "admin";
 };
 
-const AUTH_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/capture", label: "Quick Capture" },
-  { href: "/report/new", label: "New Report" },
-  { href: "/events", label: "Events" },
-  { href: "/profile", label: "Profile" },
-  { href: "/admin", label: "Moderation", adminOnly: true },
-  { href: "/map", label: "GIS Workspace", adminOnly: true },
+const USER_ITEMS: NavItem[] = [
+  { href: "/dashboard", label: "Dashboard", section: "user" },
+  { href: "/events", label: "Events", section: "user" },
+  { href: "/notifications", label: "Notifications", section: "user" },
 ];
+
+const ADMIN_ITEMS: NavItem[] = [
+  { href: "/admin", label: "Moderation", adminOnly: true, section: "admin" },
+  { href: "/admin/events", label: "Manage Events", adminOnly: true, section: "admin" },
+  { href: "/map", label: "GIS Workspace", adminOnly: true, section: "admin" },
+];
+
+const ALL_ITEMS: NavItem[] = [...USER_ITEMS, ...ADMIN_ITEMS];
 
 export default function AppNavigation() {
   const pathname = usePathname();
@@ -31,7 +36,7 @@ export default function AppNavigation() {
   const showNav = pathname ? !pathname.startsWith("/api") : false;
 
   const navItems = useMemo(
-    () => AUTH_ITEMS.filter((item) => !item.adminOnly || isAdmin),
+    () => ALL_ITEMS.filter((item) => !item.adminOnly || isAdmin),
     [isAdmin]
   );
 
@@ -88,16 +93,22 @@ export default function AppNavigation() {
 
         {isAuthenticated && !loading && (
           <nav className="app-nav" aria-label="Main navigation">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const active =
                 pathname === item.href ||
                 (item.href !== "/" && pathname?.startsWith(`${item.href}/`));
+              
+              // Add separator before admin section
+              const showSeparator = index > 0 && 
+                navItems[index - 1]?.section === "user" && 
+                item.section === "admin";
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`app-nav-link ${active ? "active" : ""}`}
+                  className={`app-nav-link ${active ? "active" : ""} ${item.section === "admin" && isAdmin ? "app-nav-link-admin" : ""}`}
+                  style={showSeparator ? { marginLeft: "auto", paddingLeft: "1rem", borderLeft: "1px solid rgba(15, 23, 42, 0.15)" } : {}}
                 >
                   {item.label}
                 </Link>
@@ -149,15 +160,29 @@ export default function AppNavigation() {
               pathname === item.href ||
               (item.href !== "/" && pathname?.startsWith(`${item.href}/`));
 
+            // Add separator before admin section in mobile
+            const showSeparator = index > 0 && 
+              navItems[index - 1]?.section === "user" && 
+              item.section === "admin";
+
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`app-nav-mobile-link ${active ? "active" : ""}`}
-                style={{ transitionDelay: mobileOpen ? `${index * 25}ms` : "0ms" }}
-              >
-                {item.label}
-              </Link>
+              <div key={item.href}>
+                {showSeparator && (
+                  <div style={{ 
+                    height: "1px", 
+                    background: "rgba(15, 23, 42, 0.1)", 
+                    margin: "0.5rem 0",
+                    marginTop: "0.75rem"
+                  }} />
+                )}
+                <Link
+                  href={item.href}
+                  className={`app-nav-mobile-link ${active ? "active" : ""} ${item.section === "admin" && isAdmin ? "app-nav-mobile-link-admin" : ""}`}
+                  style={{ transitionDelay: mobileOpen ? `${index * 25}ms` : "0ms" }}
+                >
+                  {item.section === "admin" && isAdmin ? `⚙️ ${item.label}` : item.label}
+                </Link>
+              </div>
             );
           })}
         </nav>

@@ -70,6 +70,13 @@ export type EventRecord = {
   date: string;
   district: string;
   volunteers: string[];
+  createdBy: string;
+  createdAt: unknown;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  maxVolunteers?: number;
 };
 
 export type UserRecord = {
@@ -200,6 +207,14 @@ export function normalizeEventDoc(
     (value): value is string => typeof value === "string"
   );
 
+  const rawLocation = asObject(raw.location);
+  const locationCandidate = {
+    latitude: asNumber(rawLocation?.latitude),
+    longitude: asNumber(rawLocation?.longitude),
+  };
+
+  const parsedLocation = locationCandidate.latitude && locationCandidate.longitude ? locationCandidate : undefined;
+
   return {
     id,
     title: asString(raw.title),
@@ -207,6 +222,10 @@ export function normalizeEventDoc(
     date: asString(raw.date),
     district: asString(raw.district, "Unassigned"),
     volunteers,
+    createdBy: asString(raw.createdBy),
+    createdAt: raw.createdAt ?? null,
+    location: parsedLocation as any,
+    maxVolunteers: asNumber(raw.maxVolunteers) ?? undefined,
   };
 }
 

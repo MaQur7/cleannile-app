@@ -267,10 +267,12 @@ export default function MapView() {
           params.set("district", district.trim());
         }
 
-        const days = toDays(timeWindow);
-        if (days != null) {
-          const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-          params.set("from", from.toISOString());
+        if (mode === "replace") {
+          const days = toDays(timeWindow);
+          if (days != null) {
+            const from = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+            params.set("from", from.toISOString());
+          }
         }
 
         if (mode === "append" && nextCursor) {
@@ -672,29 +674,42 @@ export default function MapView() {
             </MarkerClusterGroup>
           )}
 
-          {showMarkers &&
-            !clusterEnabled &&
-            renderedReports.map((report) => {
-              const lat = report.location?.latitude;
-              const lng = report.location?.longitude;
+          {showMarkers && !clusterEnabled && (
+            <>
+              {renderedReports.map((report) => {
+                const lat = report.location?.latitude;
+                const lng = report.location?.longitude;
 
-              if (lat == null || lng == null) {
-                return null;
-              }
+                if (lat == null || lng == null) {
+                  return null;
+                }
 
-              return (
-                <Marker key={report.id} position={[lat, lng]}>
-                  <Popup>
-                    <strong style={{ textTransform: "capitalize" }}>{report.category}</strong>
-                    <p style={{ margin: "0.3rem 0" }}>
-                      Severity: <strong>{report.severity}</strong>
-                    </p>
-                    <p style={{ margin: "0.3rem 0" }}>District: {report.district}</p>
-                    <p>{report.description}</p>
-                  </Popup>
-                </Marker>
-              );
-            })}
+                return (
+                  <Marker key={report.id} position={[lat, lng]}>
+                    <Popup>
+                      <strong style={{ textTransform: "capitalize" }}>{report.category}</strong>
+                      <p style={{ margin: "0.3rem 0" }}>
+                        Severity: <strong>{report.severity}</strong>
+                      </p>
+                      <p style={{ margin: "0.3rem 0" }}>District: {report.district}</p>
+                      <p>{report.description}</p>
+
+                      {report.photoURL && (
+                        <Image
+                          src={report.photoURL}
+                          alt="Report evidence"
+                          width={220}
+                          height={140}
+                          className="report-photo-sm"
+                          unoptimized
+                        />
+                      )}
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </>
+          )}
         </MapContainer>
       </div>
     </div>

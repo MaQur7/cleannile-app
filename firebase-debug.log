@@ -309,3 +309,64 @@
 [debug] [2026-03-04T17:20:47.459Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/cleannile-864ad/sites/cleannile-864ad 200
 [debug] [2026-03-04T17:20:47.459Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/cleannile-864ad/sites/cleannile-864ad {"name":"projects/cleannile-864ad/sites/cleannile-864ad","defaultUrl":"https://cleannile-864ad.web.app","appId":"1:521489165229:web:85a56c1f6988de3410cf24","type":"DEFAULT_SITE"}
 [debug] [2026-03-04T17:20:49.418Z] Error: EPERM: operation not permitted, symlink 'D:\cleannile-app\node_modules\firebase-admin' -> 'D:\cleannile-app\.firebase\cleannile-864ad\functions\.next\node_modules\firebase-admin-a14c8a5423a75469'
+[debug] [2026-03-06T10:34:24.553Z] ----------------------------------------------------------------------
+[debug] [2026-03-06T10:34:24.561Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\HP\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:indexes
+[debug] [2026-03-06T10:34:24.561Z] CLI Version:   15.8.0
+[debug] [2026-03-06T10:34:24.561Z] Platform:      win32
+[debug] [2026-03-06T10:34:24.561Z] Node Version:  v24.7.0
+[debug] [2026-03-06T10:34:24.561Z] Time:          Fri Mar 06 2026 12:34:24 GMT+0200 (Central Africa Time)
+[debug] [2026-03-06T10:34:24.561Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-06T10:34:26.672Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-06T10:34:26.672Z] > authorizing via signed-in user (makurmajengm@gmail.com)
+[debug] [2026-03-06T10:34:26.672Z] [iam] checking project cleannile-864ad for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-03-06T10:34:26.673Z] Checked if tokens are valid: false, expires at: 1772748359563
+[debug] [2026-03-06T10:34:26.673Z] Checked if tokens are valid: false, expires at: 1772748359563
+[debug] [2026-03-06T10:34:26.673Z] > refreshing access token with scopes: []
+[debug] [2026-03-06T10:34:26.675Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-03-06T10:34:26.675Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-06T10:34:27.184Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-03-06T10:34:27.184Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-06T10:34:27.191Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/cleannile-864ad:testIamPermissions [none]
+[debug] [2026-03-06T10:34:27.191Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/cleannile-864ad:testIamPermissions  x-goog-user-project=cleannile-864ad
+[debug] [2026-03-06T10:34:27.191Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cleannile-864ad:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-03-06T10:34:29.110Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/cleannile-864ad:testIamPermissions 200
+[debug] [2026-03-06T10:34:29.110Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cleannile-864ad:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'cleannile-864ad'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-03-06T10:34:29.116Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:29.116Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:29.116Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) [none]
+[debug] [2026-03-06T10:34:30.826Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) 200
+[debug] [2026-03-06T10:34:30.826Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) {"name":"projects/cleannile-864ad/databases/(default)","uid":"be09b766-a80f-4070-828b-fe83559076ee","createTime":"2026-03-03T11:33:35.078270Z","updateTime":"2026-03-03T11:33:35.078270Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-03-06T09:34:30.793698Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IPDmqcmJi5MDMLyW3bHwg5MD"}
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-03-06T10:34:30.830Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:30.830Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:30.830Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/cleannile-864ad:test [none]
+[debug] [2026-03-06T10:34:30.830Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/cleannile-864ad:test [omitted]
+[debug] [2026-03-06T10:34:32.150Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/cleannile-864ad:test 200
+[debug] [2026-03-06T10:34:32.150Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/cleannile-864ad:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[info] i  firestore: deploying indexes... 
+[debug] [2026-03-06T10:34:32.154Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.154Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.155Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2026-03-06T10:34:32.597Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2026-03-06T10:34:32.597Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/indexes {"indexes":[{"name":"projects/cleannile-864ad/databases/(default)/collectionGroups/reports/indexes/CICAgJim14AK","queryScope":"COLLECTION","fields":[{"fieldPath":"spatial.tokens","arrayConfig":"CONTAINS"},{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}],"state":"READY","density":"SPARSE_ALL"},{"name":"projects/cleannile-864ad/databases/(default)/collectionGroups/reports/indexes/CICAgOjXh4EK","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"ASCENDING"},{"fieldPath":"__name__","order":"ASCENDING"}],"state":"READY","density":"SPARSE_ALL"},{"name":"projects/cleannile-864ad/databases/(default)/collectionGroups/reports/indexes/CICAgJiUpoMK","queryScope":"COLLECTION","fields":[{"fieldPath":"userId","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}],"state":"READY","density":"SPARSE_ALL"},{"name":"projects/cleannile-864ad/databases/(default)/collectionGroups/reports/indexes/CICAgOi3kJAK","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}],"state":"READY","density":"SPARSE_ALL"}]}
+[debug] [2026-03-06T10:34:32.598Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.598Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.598Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2026-03-06T10:34:32.935Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2026-03-06T10:34:32.936Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/cleannile-864ad/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[debug] [2026-03-06T10:34:32.936Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.936Z] Checked if tokens are valid: true, expires at: 1772796866184
+[debug] [2026-03-06T10:34:32.937Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) [none]
+[debug] [2026-03-06T10:34:33.274Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) 200
+[debug] [2026-03-06T10:34:33.275Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/cleannile-864ad/databases/(default) {"name":"projects/cleannile-864ad/databases/(default)","uid":"be09b766-a80f-4070-828b-fe83559076ee","createTime":"2026-03-03T11:33:35.078270Z","updateTime":"2026-03-03T11:33:35.078270Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-03-06T09:34:33.205497Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IMiBvcqJi5MDMLyW3bHwg5MD"}
+[info] i  firestore: The following indexes are defined in your project but are not present in your firestore indexes file:
+	(reports) -- (spatial.tokens,CONTAINS) (status,ASCENDING) (createdAt,DESCENDING)  -- Density:SPARSE_ALL  

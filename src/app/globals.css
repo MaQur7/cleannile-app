@@ -135,6 +135,21 @@ body {
   background: rgba(15, 118, 110, 0.12);
 }
 
+.app-nav-link-admin {
+  color: rgba(15, 76, 129, 0.78);
+}
+
+.app-nav-link-admin:hover {
+  color: var(--secondary);
+  background: rgba(15, 76, 129, 0.08);
+}
+
+.app-nav-link-admin.active {
+  color: var(--secondary);
+  border-color: rgba(15, 76, 129, 0.35);
+  background: rgba(15, 76, 129, 0.12);
+}
+
 .app-header-actions {
   display: inline-flex;
   align-items: center;

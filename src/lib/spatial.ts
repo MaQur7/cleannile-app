@@ -99,27 +99,129 @@ export function parseBoundingBox(raw: string | null): BoundingBox | null {
   return { south, west, north, east };
 }
 
-export function bboxToTokens(
-  bbox: BoundingBox,
-  cellSize: number,
-  limit = 30
-): string[] {
+/**
+ * Calculate bounding box area in square degrees
+ * Useful for determining query granularity
+ */
+export function calculateBboxArea(bbox: BoundingBox): number {
+  const latDiff = bbox.north - bbox.south;
+  const lngDiff = bbox.east - bbox.west;
+  return latDiff * lngDiff;
+}
+
+/**
+ * Determine optimal cell size based on bounding box
+ * Larger bboxes use coarser grids for efficiency
+ */
+export function getOptimalCellSize(bbox: BoundingBox): number {
+  const area = calculateBboxArea(bbox);
+
+  if (area > 100) {
+    return 1; // Very large area - use 1 degree cells
+  } else if (area > 10) {
+    return 0.25; // Large area - use 0.25 degree cells
+  } else if (area > 1) {
+    return 0.05; // Medium area - use 0.05 degree cells
+  } else {
+    return 0.01; // Small area - use 0.01 degree cells
+  }
+}
+
+/**
+ * Generate spatial tokens for a bounding box at multiple resolutions
+ * This enables efficient multi-scale spatial queries
+ */
+export function bboxToTokens(bbox: BoundingBox, minCellSize: number = 0.05, maxTokens: number = 30): string[] {
   const tokens: string[] = [];
+  const cellSize = Math.max(minCellSize, getOptimalCellSize(bbox));
 
-  const southBucket = Math.floor((bbox.south + 90) / cellSize);
-  const northBucket = Math.floor((bbox.north + 90) / cellSize);
-  const westBucket = Math.floor((bbox.west + 180) / cellSize);
-  const eastBucket = Math.floor((bbox.east + 180) / cellSize);
+  // Generate cell2 tokens (0.25 degree)
+  for (let lat = Math.floor(bbox.south / 0.25); lat <= Math.ceil(bbox.north / 0.25); lat++) {
+    for (let lng = Math.floor(bbox.west / 0.25); lng <= Math.ceil(bbox.east / 0.25); lng++) {
+      tokens.push(cellKey(lat * 0.25 + 0.125, lng * 0.25 + 0.125, 0.25));
+    }
+  }
 
-  for (let latBucket = southBucket; latBucket <= northBucket; latBucket += 1) {
-    for (let lngBucket = westBucket; lngBucket <= eastBucket; lngBucket += 1) {
-      tokens.push(`${cellSize}:${latBucket}:${lngBucket}`);
-
-      if (tokens.length >= limit) {
-        return tokens;
+  // For fine-grained queries on smaller areas, add higher resolution tokens
+  if (calculateBboxArea(bbox) < 10 && tokens.length < maxTokens) {
+    for (let lat = Math.floor(bbox.south / 0.05); lat <= Math.ceil(bbox.north / 0.05); lat++) {
+      for (let lng = Math.floor(bbox.west / 0.05); lng <= Math.ceil(bbox.east / 0.05); lng++) {
+        tokens.push(cellKey(lat * 0.05 + 0.025, lng * 0.05 + 0.025, 0.05));
       }
     }
   }
 
-  return tokens;
+  // Deduplicate and limit
+  return Array.from(new Set(tokens)).slice(0, maxTokens);
+}
+
+/**
+ * Calculate great circle distance between two points
+ * Returns distance in kilometers
+ */
+export function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+/**
+ * Cluster points by proximity within a specified distance
+ */
+export function clusterProximityPoints(
+  points: Array<{ id: string; latitude: number; longitude: number; data?: any }>,
+  radiusKm: number = 1
+): Array<{ id: string; points: typeof points; centroid: [number, number] }> {
+  const clusters: Map<
+    string,
+    { id: string; points: typeof points; centroid: [number, number] }
+  > = new Map();
+  const visited = new Set<string>();
+
+  for (const point of points) {
+    if (visited.has(point.id)) continue;
+
+    const cluster = { id: point.id, points: [point], centroid: [point.latitude, point.longitude] as [number, number] };
+    visited.add(point.id);
+
+    for (const other of points) {
+      if (visited.has(other.id)) continue;
+
+      const distance = calculateDistance(
+        point.latitude,
+        point.longitude,
+        other.latitude,
+        other.longitude
+      );
+
+      if (distance <= radiusKm) {
+        cluster.points.push(other);
+        visited.add(other.id);
+
+        // Update centroid
+        const avgLat = cluster.points.reduce((sum, p) => sum + p.latitude, 0) / cluster.points.length;
+        const avgLon = cluster.points.reduce((sum, p) => sum + p.longitude, 0) / cluster.points.length;
+        cluster.centroid = [avgLat, avgLon];
+      }
+    }
+
+    clusters.set(cluster.id, cluster);
+  }
+
+  return Array.from(clusters.values());
 }
